@@ -9,11 +9,14 @@ class NFlex extends MultiChildRenderObjectWidget {
     super.children,
     required this.direction,
     this.padding = EdgeInsets.zero,
+    this.mainAxisAlignment = MainAxisAlignment.start,
   });
 
   final Axis direction;
 
   final EdgeInsets padding;
+
+  final MainAxisAlignment mainAxisAlignment;
 
   @override
   RenderNFlex createRenderObject(BuildContext context) {
@@ -30,6 +33,28 @@ class NFlex extends MultiChildRenderObjectWidget {
       ..direction = direction
       ..padding = padding;
   }
+}
+
+class NRow extends NFlex {
+  NRow({
+    super.key,
+    super.mainAxisAlignment,
+    super.padding,
+    super.children,
+  }) : super(
+          direction: Axis.horizontal,
+        );
+}
+
+class NColumn extends NFlex {
+  NColumn({
+    super.key,
+    super.mainAxisAlignment,
+    super.padding,
+    super.children,
+  }) : super(
+          direction: Axis.vertical,
+        );
 }
 
 class NFlexParentData extends ContainerBoxParentData<RenderBox> {}
@@ -115,7 +140,8 @@ class RenderNFlex extends RenderBox
 
     int index = 0;
     visitChildren((child) {
-      (child.parentData as NFlexParentData).offset = Offset(usedSpace, padding.top + ((contentSize.height - sizes[index].height) / 2));
+      (child.parentData as NFlexParentData).offset = Offset(usedSpace,
+          padding.top + ((contentSize.height - sizes[index].height) / 2));
       usedSpace += sizes[index].width;
       index++;
     });
