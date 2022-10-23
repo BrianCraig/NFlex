@@ -1,7 +1,23 @@
 library nflex;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
+import 'package:flutter/widgets.dart';
+
+class NFlex extends StatelessWidget {
+  const NFlex({
+    super.key,
+    required this.children,
+    required this.direction,
+    this.padding = EdgeInsets.zero,
+  });
+
+  final Axis direction;
+
+  final EdgeInsetsGeometry padding;
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
 }
