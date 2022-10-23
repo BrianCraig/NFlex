@@ -1,27 +1,40 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+A Flex implementation similar to FlutterFlex, aimed to be simpler, faster, and fixing some limitations. 
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+> **Warning**
+> This package is in development. It's unfinished and changes are inevitable. Expect v1 to be stable.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+### Parent Widgets
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+`Flex` => `NFlex`.  
+`Row` => `NRow`.  
+`Column` => `NColumn`.  
 
-## Features
+### Child Widgets
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+`Expanded` => `NExpanded`.  
+
+### Helper Widgets
+
+`NDirection`.  
+
+## Features over Flex
+
+`padding`: set padding directly in the `Parent Widgets`.  
+`gap`: 
+
+## Limitations
+
+As expected on `v1`, `Parent Widgets` would not provide `baseline` alignments, and `verticalAlignment` and `textDirection` are not available directly on `NFlex`, but in `NDirection`.
+
+## Differences
+
+`Expanded` children would get shared space after minium size calculations.
+On `Flutter` they don't get a minium size. 
+Add example.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+run `flutter pub get nflex`
 
 ## Usage
 
@@ -29,11 +42,18 @@ TODO: Include short and useful examples for package users. Add longer examples
 to `/example` folder.
 
 ```dart
-const like = 'sample';
+NFlex(
+  padding: const EdgeInsets.all(10.0),
+  direction: Axis.horizontal,
+  children: [
+    Container(
+      color: const Color.fromRGBO(255, 0, 0, 1),
+      constraints: const BoxConstraints.tightFor(width: 100, height: 100),
+    ),
+    Container(
+      color: const Color.fromARGB(255, 200, 255, 0),
+      constraints: const BoxConstraints.tightFor(width: 80, height: 80),
+    ),
+  ],
+);
 ```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
