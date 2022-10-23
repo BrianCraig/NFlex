@@ -38,9 +38,6 @@ run `flutter pub get nflex`
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
 ```dart
 NFlex(
   padding: const EdgeInsets.all(10.0),
