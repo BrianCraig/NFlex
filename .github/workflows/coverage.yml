@@ -1,0 +1,21 @@
+name: Coverage
+
+on:  
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: subosito/flutter-action@v2
+      - name: Run test
+        run: flutter test --coverage
+      - uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
