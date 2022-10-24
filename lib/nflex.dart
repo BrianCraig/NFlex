@@ -1,5 +1,7 @@
 library nflex;
 
+import 'dart:math' show max;
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
@@ -22,6 +24,7 @@ class NFlex extends MultiChildRenderObjectWidget {
   RenderNFlex createRenderObject(BuildContext context) {
     return RenderNFlex(
       direction: direction,
+      mainAxisAlignment: mainAxisAlignment,
       padding: padding,
     );
   }
@@ -31,6 +34,7 @@ class NFlex extends MultiChildRenderObjectWidget {
       BuildContext context, covariant RenderNFlex renderObject) {
     renderObject
       ..direction = direction
+      ..mainAxisAlignment = mainAxisAlignment
       ..padding = padding;
   }
 }
@@ -64,8 +68,10 @@ class RenderNFlex extends RenderBox
   RenderNFlex({
     List<RenderBox>? children,
     Axis direction = Axis.horizontal,
+    MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
     EdgeInsets padding = EdgeInsets.zero,
   })  : _direction = direction,
+        _mainAxisAlignment = mainAxisAlignment,
         _padding = padding;
 
   /// The direction to use as the main axis.
@@ -74,6 +80,16 @@ class RenderNFlex extends RenderBox
   set direction(Axis value) {
     if (_direction != value) {
       _direction = value;
+      markNeedsLayout();
+    }
+  }
+
+  /// The main axis alignment.
+  MainAxisAlignment get mainAxisAlignment => _mainAxisAlignment;
+  MainAxisAlignment _mainAxisAlignment;
+  set mainAxisAlignment(MainAxisAlignment value) {
+    if (_mainAxisAlignment != value) {
+      _mainAxisAlignment = value;
       markNeedsLayout();
     }
   }
@@ -134,15 +150,48 @@ class RenderNFlex extends RenderBox
       ),
     );
 
-    //double totalSpace = sizes.fold(0, (previousValue, element) => previousValue + element.width);
+    double allocatedSize = sizes.fold(
+        0, (previousValue, element) => previousValue + element.width);
 
-    double usedSpace = padding.left; // use EdgeInsets
+    final double actualSizeDelta =
+        size.width - padding.horizontal - allocatedSize;
+    final double remainingSpace = max(0.0, actualSizeDelta);
+    late final double leadingSpace;
+    late final double betweenSpace;
+    switch (_mainAxisAlignment) {
+      case MainAxisAlignment.start:
+        leadingSpace = 0.0;
+        betweenSpace = 0.0; // gap here?
+        break;
+      case MainAxisAlignment.end:
+        leadingSpace = remainingSpace;
+        betweenSpace = 0.0; // gap here?
+        break;
+      case MainAxisAlignment.center:
+        leadingSpace = remainingSpace / 2.0;
+        betweenSpace = 0.0; // gap here?
+        break;
+      case MainAxisAlignment.spaceBetween:
+        leadingSpace = 0.0;
+        betweenSpace = childCount > 1 ? remainingSpace / (childCount - 1) : 0.0;
+        break;
+      case MainAxisAlignment.spaceAround:
+        betweenSpace = childCount > 0 ? remainingSpace / childCount : 0.0;
+        leadingSpace = betweenSpace / 2.0;
+        break;
+      case MainAxisAlignment.spaceEvenly:
+        betweenSpace = childCount > 0 ? remainingSpace / (childCount + 1) : 0.0;
+        leadingSpace = betweenSpace;
+        break;
+    }
+
+    double usedSpace = padding.left + leadingSpace; // use EdgeInsets
 
     int index = 0;
     visitChildren((child) {
       (child.parentData as NFlexParentData).offset = Offset(usedSpace,
           padding.top + ((contentSize.height - sizes[index].height) / 2));
-      usedSpace += sizes[index].width;
+      usedSpace += sizes[index].width + betweenSpace;
       index++;
     });
   }
