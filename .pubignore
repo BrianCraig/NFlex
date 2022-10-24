@@ -1,0 +1,6 @@
+test/goldens/
+test/failures/
+build/
+coverage/
+
+nflex.iml
