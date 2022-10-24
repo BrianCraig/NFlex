@@ -112,26 +112,6 @@ class RenderNFlex extends RenderBox
   }
 
   @override
-  double computeMinIntrinsicWidth(double height) {
-    return super.computeMinIntrinsicWidth(height);
-  }
-
-  @override
-  double computeMaxIntrinsicWidth(double height) {
-    return super.computeMaxIntrinsicWidth(height);
-  }
-
-  @override
-  double computeMinIntrinsicHeight(double width) {
-    return super.computeMinIntrinsicHeight(width);
-  }
-
-  @override
-  double computeMaxIntrinsicHeight(double width) {
-    return super.computeMaxIntrinsicHeight(width);
-  }
-
-  @override
   Size computeDryLayout(BoxConstraints constraints) {
     return constraints.biggest;
   }
