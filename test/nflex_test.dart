@@ -117,4 +117,57 @@ void main() {
       await tester.setScreenSize(width: 200, height: 200);
     });
   }
+
+  for (CrossAxisAlignment alignment in List.from(CrossAxisAlignment.values)..remove(CrossAxisAlignment.baseline)) {
+    testWidgets('NRow with CrossAxisAlignment at $alignment',
+        (WidgetTester tester) async {
+      await expectEqualWidget(
+        tester,
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            crossAxisAlignment: alignment,
+            textDirection: TextDirection.ltr,
+            children: [
+              Container(
+                color: const Color.fromRGBO(255, 0, 0, 1),
+                constraints:
+                    const BoxConstraints.tightFor(width: 100, height: 100),
+              ),
+              Container(
+                color: const Color.fromARGB(255, 200, 255, 0),
+                constraints:
+                    const BoxConstraints.tightFor(width: 40, height: 40),
+              ),
+              Container(
+                color: const Color.fromARGB(255, 0, 255, 21),
+                constraints: const BoxConstraints.tightFor(width: 8, height: 8),
+              ),
+            ],
+          ),
+        ),
+        NRow(
+          padding: const EdgeInsets.all(10.0),
+          crossAxisAlignment: alignment,
+          children: [
+            Container(
+              color: const Color.fromRGBO(255, 0, 0, 1),
+              constraints:
+                  const BoxConstraints.tightFor(width: 100, height: 100),
+            ),
+            Container(
+              color: const Color.fromARGB(255, 200, 255, 0),
+              constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+            ),
+            Container(
+              color: const Color.fromARGB(255, 0, 255, 21),
+              constraints: const BoxConstraints.tightFor(width: 8, height: 8),
+            ),
+          ],
+        ),
+        './goldens/nrow-caa/$alignment.png',
+      );
+      await tester.setScreenSize(width: 200, height: 200);
+    });
+  }
 }

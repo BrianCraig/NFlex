@@ -12,6 +12,7 @@ class NFlex extends MultiChildRenderObjectWidget {
     required this.direction,
     this.padding = EdgeInsets.zero,
     this.mainAxisAlignment = MainAxisAlignment.start,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
   });
 
   final Axis direction;
@@ -20,11 +21,14 @@ class NFlex extends MultiChildRenderObjectWidget {
 
   final MainAxisAlignment mainAxisAlignment;
 
+  final CrossAxisAlignment crossAxisAlignment;
+
   @override
   RenderNFlex createRenderObject(BuildContext context) {
     return RenderNFlex(
       direction: direction,
       mainAxisAlignment: mainAxisAlignment,
+      crossAxisAlignment: crossAxisAlignment,
       padding: padding,
     );
   }
@@ -35,6 +39,7 @@ class NFlex extends MultiChildRenderObjectWidget {
     renderObject
       ..direction = direction
       ..mainAxisAlignment = mainAxisAlignment
+      ..crossAxisAlignment = crossAxisAlignment
       ..padding = padding;
   }
 }
@@ -43,6 +48,7 @@ class NRow extends NFlex {
   NRow({
     super.key,
     super.mainAxisAlignment,
+    super.crossAxisAlignment,
     super.padding,
     super.children,
   }) : super(
@@ -54,6 +60,7 @@ class NColumn extends NFlex {
   NColumn({
     super.key,
     super.mainAxisAlignment,
+    super.crossAxisAlignment,
     super.padding,
     super.children,
   }) : super(
@@ -69,9 +76,11 @@ class RenderNFlex extends RenderBox
     List<RenderBox>? children,
     Axis direction = Axis.horizontal,
     MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
     EdgeInsets padding = EdgeInsets.zero,
   })  : _direction = direction,
         _mainAxisAlignment = mainAxisAlignment,
+        _crossAxisAlignment = crossAxisAlignment,
         _padding = padding;
 
   /// The direction to use as the main axis.
@@ -90,6 +99,16 @@ class RenderNFlex extends RenderBox
   set mainAxisAlignment(MainAxisAlignment value) {
     if (_mainAxisAlignment != value) {
       _mainAxisAlignment = value;
+      markNeedsLayout();
+    }
+  }
+
+  /// The cross axis alignment.
+  CrossAxisAlignment get crossAxisAlignment => _crossAxisAlignment;
+  CrossAxisAlignment _crossAxisAlignment;
+  set crossAxisAlignment(CrossAxisAlignment value) {
+    if (_crossAxisAlignment != value) {
+      _crossAxisAlignment = value;
       markNeedsLayout();
     }
   }
@@ -144,9 +163,32 @@ class RenderNFlex extends RenderBox
 
     List<Size> sizes = [];
 
+    final BoxConstraints innerConstraints;
+
+    if (crossAxisAlignment == CrossAxisAlignment.stretch) {
+      switch (_direction) {
+        case Axis.horizontal:
+          innerConstraints =
+              BoxConstraints.tightFor(height: contentSize.height);
+          break;
+        case Axis.vertical:
+          innerConstraints = BoxConstraints.tightFor(width: contentSize.width);
+          break;
+      }
+    } else {
+      switch (_direction) {
+        case Axis.horizontal:
+          innerConstraints = BoxConstraints(maxHeight: contentSize.height);
+          break;
+        case Axis.vertical:
+          innerConstraints = BoxConstraints(maxWidth: contentSize.width);
+          break;
+      }
+    }
+
     visitChildren(
       (child) => sizes.add(
-        ChildLayoutHelper.layoutChild(child as RenderBox, constraints.loosen()),
+        ChildLayoutHelper.layoutChild(child as RenderBox, innerConstraints),
       ),
     );
 
@@ -189,8 +231,24 @@ class RenderNFlex extends RenderBox
 
     int index = 0;
     visitChildren((child) {
-      (child.parentData as NFlexParentData).offset = Offset(usedSpace,
-          padding.top + ((contentSize.height - sizes[index].height) / 2));
+      NFlexParentData pd = child.parentData as NFlexParentData;
+      Size size = sizes[index];
+      switch (_crossAxisAlignment) {
+        case CrossAxisAlignment.center:
+        case CrossAxisAlignment.stretch:
+          pd.offset = Offset(usedSpace,
+              padding.top + ((contentSize.height - size.height) / 2));
+          break;
+        case CrossAxisAlignment.start:
+          pd.offset = Offset(usedSpace, padding.top);
+          break;
+        case CrossAxisAlignment.end:
+          pd.offset = Offset(
+              usedSpace, this.size.height - padding.bottom - size.height);
+          break;
+        default:
+          break;
+      }
       usedSpace += sizes[index].width + betweenSpace;
       index++;
     });
