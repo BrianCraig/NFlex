@@ -70,6 +70,13 @@ class NColumn extends NFlex {
 
 class NFlexParentData extends ContainerBoxParentData<RenderBox> {}
 
+class _LayoutChildHelper {
+  const _LayoutChildHelper(this.pd, this.size);
+
+  final NFlexParentData pd;
+  final Size size;
+}
+
 class RenderNFlex extends RenderBox
     with ContainerRenderObjectMixin<RenderBox, NFlexParentData> {
   RenderNFlex({
@@ -159,9 +166,8 @@ class RenderNFlex extends RenderBox
   void performLayout() {
     size = constraints.biggest;
     Size contentSize = padding.deflateSize(size);
-    RenderBox? child = firstChild;
 
-    List<Size> sizes = [];
+    List<_LayoutChildHelper> layoutChildrens = [];
 
     final BoxConstraints innerConstraints;
 
@@ -187,13 +193,14 @@ class RenderNFlex extends RenderBox
     }
 
     visitChildren(
-      (child) => sizes.add(
+      (child) => layoutChildrens.add(_LayoutChildHelper(
+        child.parentData as NFlexParentData,
         ChildLayoutHelper.layoutChild(child as RenderBox, innerConstraints),
-      ),
+      )),
     );
 
-    double allocatedSize = sizes.fold(
-        0, (previousValue, element) => previousValue + element.width);
+    double allocatedSize = layoutChildrens.fold(
+        0, (previousValue, element) => previousValue + element.size.width);
 
     final double actualSizeDelta =
         size.width - padding.horizontal - allocatedSize;
@@ -229,29 +236,25 @@ class RenderNFlex extends RenderBox
 
     double usedSpace = padding.left + leadingSpace; // use EdgeInsets
 
-    int index = 0;
-    visitChildren((child) {
-      NFlexParentData pd = child.parentData as NFlexParentData;
-      Size size = sizes[index];
+    for (_LayoutChildHelper child in layoutChildrens) {
       switch (_crossAxisAlignment) {
         case CrossAxisAlignment.center:
         case CrossAxisAlignment.stretch:
-          pd.offset = Offset(usedSpace,
-              padding.top + ((contentSize.height - size.height) / 2));
+          child.pd.offset = Offset(usedSpace,
+              padding.top + ((contentSize.height - child.size.height) / 2));
           break;
         case CrossAxisAlignment.start:
-          pd.offset = Offset(usedSpace, padding.top);
+          child.pd.offset = Offset(usedSpace, padding.top);
           break;
         case CrossAxisAlignment.end:
-          pd.offset = Offset(
-              usedSpace, this.size.height - padding.bottom - size.height);
+          child.pd.offset = Offset(
+              usedSpace, size.height - padding.bottom - child.size.height);
           break;
         default:
           break;
       }
-      usedSpace += sizes[index].width + betweenSpace;
-      index++;
-    });
+      usedSpace += child.size.width + betweenSpace;
+    }
   }
 
   @override
