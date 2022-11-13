@@ -169,28 +169,14 @@ class RenderNFlex extends RenderBox
 
     List<_LayoutChildHelper> layoutChildrens = [];
 
-    final BoxConstraints innerConstraints;
-
-    if (crossAxisAlignment == CrossAxisAlignment.stretch) {
-      switch (_direction) {
-        case Axis.horizontal:
-          innerConstraints =
-              BoxConstraints.tightFor(height: contentSize.height);
-          break;
-        case Axis.vertical:
-          innerConstraints = BoxConstraints.tightFor(width: contentSize.width);
-          break;
-      }
-    } else {
-      switch (_direction) {
-        case Axis.horizontal:
-          innerConstraints = BoxConstraints(maxHeight: contentSize.height);
-          break;
-        case Axis.vertical:
-          innerConstraints = BoxConstraints(maxWidth: contentSize.width);
-          break;
-      }
-    }
+    final BoxConstraints innerConstraints =
+        crossAxisAlignment == CrossAxisAlignment.stretch
+            ? (_direction == Axis.horizontal
+                ? BoxConstraints.tightFor(height: contentSize.height)
+                : BoxConstraints.tightFor(width: contentSize.width))
+            : (_direction == Axis.horizontal
+                ? BoxConstraints(maxHeight: contentSize.height)
+                : BoxConstraints(maxWidth: contentSize.width));
 
     visitChildren(
       (child) => layoutChildrens.add(_LayoutChildHelper(
