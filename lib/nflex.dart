@@ -77,6 +77,27 @@ class _LayoutChildHelper {
   final Size size;
 }
 
+extension on Axis {
+  double _mainWidth(Size size) =>
+      this == Axis.horizontal ? size.width : size.height;
+
+  double _crossWidth(Size size) =>
+      this == Axis.horizontal ? size.height : size.width;
+
+  double _mainPadding(EdgeInsets padding) =>
+      this == Axis.horizontal ? padding.horizontal : padding.vertical;
+
+  double _mainStart(EdgeInsets padding) =>
+      this == Axis.horizontal ? padding.left : padding.top;
+
+  double _crossStart(EdgeInsets padding) =>
+      this == Axis.horizontal ? padding.top : padding.left;
+
+  Offset _offset(double main, double cross) => Offset(
+      this == Axis.horizontal ? main : cross,
+      this == Axis.horizontal ? cross : main);
+}
+
 class RenderNFlex extends RenderBox
     with ContainerRenderObjectMixin<RenderBox, NFlexParentData> {
   RenderNFlex({
@@ -186,10 +207,13 @@ class RenderNFlex extends RenderBox
     );
 
     double allocatedSize = layoutChildrens.fold(
-        0, (previousValue, element) => previousValue + element.size.width);
+        0,
+        (previousValue, element) =>
+            previousValue + _direction._mainWidth(element.size));
 
-    final double actualSizeDelta =
-        size.width - padding.horizontal - allocatedSize;
+    final double actualSizeDelta = _direction._mainWidth(size) -
+        _direction._mainPadding(padding) -
+        allocatedSize;
     final double remainingSpace = max(0.0, actualSizeDelta);
     late final double leadingSpace;
     late final double betweenSpace;
@@ -220,26 +244,40 @@ class RenderNFlex extends RenderBox
         break;
     }
 
-    double usedSpace = padding.left + leadingSpace; // use EdgeInsets
+    double usedSpace =
+        _direction._mainStart(padding) + leadingSpace; // use EdgeInsets
 
     for (_LayoutChildHelper child in layoutChildrens) {
       switch (_crossAxisAlignment) {
-        case CrossAxisAlignment.center:
         case CrossAxisAlignment.stretch:
-          child.pd.offset = Offset(usedSpace,
-              padding.top + ((contentSize.height - child.size.height) / 2));
+          child.pd.offset =
+              _direction._offset(usedSpace, _direction._crossStart(padding));
+          break;
+        case CrossAxisAlignment.center:
+          child.pd.offset = _direction._offset(
+            usedSpace,
+            _direction._crossStart(padding) +
+                ((_direction._crossWidth(contentSize) -
+                        _direction._crossWidth(child.size)) /
+                    2),
+          );
           break;
         case CrossAxisAlignment.start:
-          child.pd.offset = Offset(usedSpace, padding.top);
+          child.pd.offset =
+              _direction._offset(usedSpace, _direction._crossStart(padding));
           break;
         case CrossAxisAlignment.end:
-          child.pd.offset = Offset(
-              usedSpace, size.height - padding.bottom - child.size.height);
+          child.pd.offset = _direction._offset(
+            usedSpace,
+            _direction._crossWidth(size) -
+                _direction._crossStart(padding.flipped) -
+                _direction._crossWidth(child.size),
+          );
           break;
         default:
           break;
       }
-      usedSpace += child.size.width + betweenSpace;
+      usedSpace += _direction._mainWidth(child.size) + betweenSpace;
     }
   }
 
