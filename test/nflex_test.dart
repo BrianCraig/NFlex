@@ -25,149 +25,57 @@ Future<void> expectEqualWidget(
 }
 
 void main() {
+  const Map<String, EdgeInsets> paddingMap = {
+    'zero': EdgeInsets.zero,
+    '10': EdgeInsets.all(10.0),
+    'different': EdgeInsets.fromLTRB(8, 10, 16, 4),
+  };
 
-  testWidgets('Nflex with Padding', (WidgetTester tester) async {
-    await expectEqualWidget(
-      tester,
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Flex(
-          direction: Axis.horizontal,
-          textDirection: TextDirection.ltr,
-          children: [
-            Container(
-              color: const Color.fromRGBO(255, 0, 0, 1),
-              constraints:
-                  const BoxConstraints.tightFor(width: 100, height: 100),
-            ),
-            Container(
-              color: const Color.fromARGB(255, 200, 255, 0),
-              constraints: const BoxConstraints.tightFor(width: 80, height: 80),
-            ),
-          ],
-        ),
-      ),
-      NFlex(
-        padding: const EdgeInsets.all(10.0),
-        direction: Axis.horizontal,
-        children: [
+  List<CrossAxisAlignment> caas = List.from(CrossAxisAlignment.values)
+    ..remove(CrossAxisAlignment.baseline);
+
+  for (MainAxisAlignment maa in MainAxisAlignment.values) {
+    for (CrossAxisAlignment caa in caas) {
+      for (final padding in paddingMap.entries) {
+        List<Widget> children = [
           Container(
             color: const Color.fromRGBO(255, 0, 0, 1),
             constraints: const BoxConstraints.tightFor(width: 100, height: 100),
           ),
           Container(
             color: const Color.fromARGB(255, 200, 255, 0),
-            constraints: const BoxConstraints.tightFor(width: 80, height: 80),
+            constraints: const BoxConstraints.tightFor(width: 40, height: 40),
           ),
-        ],
-      ),
-      './goldens/nflex-with-padding.png',
-    );
-  });
-
-  for (MainAxisAlignment alignment in MainAxisAlignment.values) {
-    testWidgets('NRow with MainAxisAlignment at $alignment',
-        (WidgetTester tester) async {
-      await expectEqualWidget(
-        tester,
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Row(
-            mainAxisAlignment: alignment,
-            textDirection: TextDirection.ltr,
-            children: [
-              Container(
-                color: const Color.fromRGBO(255, 0, 0, 1),
-                constraints:
-                    const BoxConstraints.tightFor(width: 100, height: 100),
-              ),
-              Container(
-                color: const Color.fromARGB(255, 200, 255, 0),
-                constraints:
-                    const BoxConstraints.tightFor(width: 40, height: 40),
-              ),
-              Container(
-                color: const Color.fromARGB(255, 0, 255, 21),
-                constraints: const BoxConstraints.tightFor(width: 8, height: 8),
-              ),
-            ],
+          Container(
+            color: const Color.fromARGB(255, 0, 255, 21),
+            constraints: const BoxConstraints.tightFor(width: 8, height: 8),
           ),
-        ),
-        NRow(
-          padding: const EdgeInsets.all(10.0),
-          mainAxisAlignment: alignment,
-          children: [
-            Container(
-              color: const Color.fromRGBO(255, 0, 0, 1),
-              constraints:
-                  const BoxConstraints.tightFor(width: 100, height: 100),
-            ),
-            Container(
-              color: const Color.fromARGB(255, 200, 255, 0),
-              constraints: const BoxConstraints.tightFor(width: 40, height: 40),
-            ),
-            Container(
-              color: const Color.fromARGB(255, 0, 255, 21),
-              constraints: const BoxConstraints.tightFor(width: 8, height: 8),
-            ),
-          ],
-        ),
-        './goldens/nrow-maa/$alignment.png',
-      );
-      await tester.setScreenSize(width: 200, height: 200);
-    });
-  }
-
-  for (CrossAxisAlignment alignment in List.from(CrossAxisAlignment.values)..remove(CrossAxisAlignment.baseline)) {
-    testWidgets('NRow with CrossAxisAlignment at $alignment',
-        (WidgetTester tester) async {
-      await expectEqualWidget(
-        tester,
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Row(
-            crossAxisAlignment: alignment,
-            textDirection: TextDirection.ltr,
-            children: [
-              Container(
-                color: const Color.fromRGBO(255, 0, 0, 1),
-                constraints:
-                    const BoxConstraints.tightFor(width: 100, height: 100),
+        ];
+        testWidgets('matrix: nrow, padding.${padding.key}, $maa, $caa',
+            (WidgetTester tester) async {
+          await expectEqualWidget(
+            tester,
+            Padding(
+              padding: padding.value,
+              child: Flex(
+                direction: Axis.horizontal,
+                mainAxisAlignment: maa,
+                crossAxisAlignment: caa,
+                textDirection: TextDirection.ltr,
+                children: children,
               ),
-              Container(
-                color: const Color.fromARGB(255, 200, 255, 0),
-                constraints:
-                    const BoxConstraints.tightFor(width: 40, height: 40),
-              ),
-              Container(
-                color: const Color.fromARGB(255, 0, 255, 21),
-                constraints: const BoxConstraints.tightFor(width: 8, height: 8),
-              ),
-            ],
-          ),
-        ),
-        NRow(
-          padding: const EdgeInsets.all(10.0),
-          crossAxisAlignment: alignment,
-          children: [
-            Container(
-              color: const Color.fromRGBO(255, 0, 0, 1),
-              constraints:
-                  const BoxConstraints.tightFor(width: 100, height: 100),
             ),
-            Container(
-              color: const Color.fromARGB(255, 200, 255, 0),
-              constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+            NFlex(
+              padding: padding.value,
+              direction: Axis.horizontal,
+              mainAxisAlignment: maa,
+              crossAxisAlignment: caa,
+              children: children,
             ),
-            Container(
-              color: const Color.fromARGB(255, 0, 255, 21),
-              constraints: const BoxConstraints.tightFor(width: 8, height: 8),
-            ),
-          ],
-        ),
-        './goldens/nrow-caa/$alignment.png',
-      );
-      await tester.setScreenSize(width: 200, height: 200);
-    });
+            './goldens/matrix-nrow-padding.${padding.key}-$maa-$caa',
+          );
+        });
+      }
+    }
   }
 }
