@@ -20,7 +20,7 @@ A Flex implementation similar to FlutterFlex, aimed to be simpler, faster, and f
 ## Features over Flex
 
 `padding`: set padding directly in the `Parent Widgets`.  
-`gap`: 
+`gap`: set the gap between elements.
 
 ## Limitations
 
@@ -54,3 +54,21 @@ NFlex(
   ],
 );
 ```
+
+## Things to do before releasing v1
+
+| feature | test | impl | doc |
+|---|---|---|---|
+| padding            | ✅ | ✅ |    |
+| gap                | ❌ | ❌ |    |
+| mainAxisAlignment  | ✅ | ✅ |    |
+| crossAxisAlignment | ✅ | ✅ |    |
+| axis               | ✅ | ✅ |    |
+| NFlexible          | ❌ | ❌ | ❌ |
+| NRow               | ❌ | ✅ |    |
+| NColumn            | ❌ | ✅ |    |
+| NDirection         | ❌ | ❌ | ❌ |
+| minium element size| ❌ | ❌ | ❌ |
+| intrinsics         | ❌ | ❌ |    |
+| dry layout         | ❌ | ❌ |    |
+| examples           |    |    | ❌ |
