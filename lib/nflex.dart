@@ -68,12 +68,12 @@ class NColumn extends NFlex {
         );
 }
 
-class NFlexParentData extends ContainerBoxParentData<RenderBox> {}
+class _NFlexParentData extends ContainerBoxParentData<RenderBox> {}
 
 class _LayoutChildHelper {
   const _LayoutChildHelper(this.pd, this.size);
 
-  final NFlexParentData pd;
+  final _NFlexParentData pd;
   final Size size;
 }
 
@@ -99,7 +99,7 @@ extension on Axis {
 }
 
 class RenderNFlex extends RenderBox
-    with ContainerRenderObjectMixin<RenderBox, NFlexParentData> {
+    with ContainerRenderObjectMixin<RenderBox, _NFlexParentData> {
   RenderNFlex({
     List<RenderBox>? children,
     Axis direction = Axis.horizontal,
@@ -153,8 +153,8 @@ class RenderNFlex extends RenderBox
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! NFlexParentData) {
-      child.parentData = NFlexParentData();
+    if (child.parentData is! _NFlexParentData) {
+      child.parentData = _NFlexParentData();
     }
   }
 
@@ -201,7 +201,7 @@ class RenderNFlex extends RenderBox
 
     visitChildren(
       (child) => layoutChildrens.add(_LayoutChildHelper(
-        child.parentData as NFlexParentData,
+        child.parentData as _NFlexParentData,
         ChildLayoutHelper.layoutChild(child as RenderBox, innerConstraints),
       )),
     );
@@ -285,8 +285,8 @@ class RenderNFlex extends RenderBox
   void paint(PaintingContext context, Offset offset) {
     RenderBox? child = firstChild;
     while (child != null) {
-      final NFlexParentData childParentData =
-          child.parentData! as NFlexParentData;
+      final _NFlexParentData childParentData =
+          child.parentData! as _NFlexParentData;
       context.paintChild(child, childParentData.offset + offset);
       child = childParentData.nextSibling;
     }

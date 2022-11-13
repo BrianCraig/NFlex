@@ -31,7 +31,7 @@ void main() {
     'different': EdgeInsets.fromLTRB(8, 10, 16, 4),
   };
 
-  const Map<String, Axis> axisMap= {
+  const Map<String, Axis> axisMap = {
     'nrow': Axis.horizontal,
     'ncolumn': Axis.vertical,
   };
@@ -39,49 +39,50 @@ void main() {
   List<CrossAxisAlignment> caas = List.from(CrossAxisAlignment.values)
     ..remove(CrossAxisAlignment.baseline);
   for (final axis in axisMap.entries) {
-  for (MainAxisAlignment maa in MainAxisAlignment.values) {
-    for (CrossAxisAlignment caa in caas) {
-      for (final padding in paddingMap.entries) {
-        List<Widget> children = [
-          Container(
-            color: const Color.fromRGBO(255, 0, 0, 1),
-            constraints: const BoxConstraints.tightFor(width: 100, height: 100),
-          ),
-          Container(
-            color: const Color.fromARGB(255, 200, 255, 0),
-            constraints: const BoxConstraints.tightFor(width: 40, height: 40),
-          ),
-          Container(
-            color: const Color.fromARGB(255, 0, 255, 21),
-            constraints: const BoxConstraints.tightFor(width: 8, height: 8),
-          ),
-        ];
-        testWidgets('matrix: ${axis.key}, padding.${padding.key}, $maa, $caa',
-            (WidgetTester tester) async {
-          await expectEqualWidget(
-            tester,
-            Padding(
-              padding: padding.value,
-              child: Flex(
+    for (MainAxisAlignment maa in MainAxisAlignment.values) {
+      for (CrossAxisAlignment caa in caas) {
+        for (final padding in paddingMap.entries) {
+          List<Widget> children = [
+            Container(
+              color: const Color.fromRGBO(255, 0, 0, 1),
+              constraints:
+                  const BoxConstraints.tightFor(width: 100, height: 100),
+            ),
+            Container(
+              color: const Color.fromARGB(255, 200, 255, 0),
+              constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+            ),
+            Container(
+              color: const Color.fromARGB(255, 0, 255, 21),
+              constraints: const BoxConstraints.tightFor(width: 8, height: 8),
+            ),
+          ];
+          testWidgets('matrix: ${axis.key}, padding.${padding.key}, $maa, $caa',
+              (WidgetTester tester) async {
+            await expectEqualWidget(
+              tester,
+              Padding(
+                padding: padding.value,
+                child: Flex(
+                  direction: axis.value,
+                  mainAxisAlignment: maa,
+                  crossAxisAlignment: caa,
+                  textDirection: TextDirection.ltr,
+                  children: children,
+                ),
+              ),
+              NFlex(
+                padding: padding.value,
                 direction: axis.value,
                 mainAxisAlignment: maa,
                 crossAxisAlignment: caa,
-                textDirection: TextDirection.ltr,
                 children: children,
               ),
-            ),
-            NFlex(
-              padding: padding.value,
-              direction: axis.value,
-              mainAxisAlignment: maa,
-              crossAxisAlignment: caa,
-              children: children,
-            ),
-            './goldens/matrix-${axis.key}-padding.${padding.key}-$maa-$caa.png',
-          );
-        });
+              './goldens/matrix-${axis.key}-padding.${padding.key}-$maa-$caa.png',
+            );
+          });
+        }
       }
     }
-  }
   }
 }
