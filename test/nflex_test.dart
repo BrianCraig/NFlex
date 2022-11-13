@@ -77,7 +77,7 @@ void main() {
               crossAxisAlignment: caa,
               children: children,
             ),
-            './goldens/matrix-${axis.key}-padding.${padding.key}-$maa-$caa',
+            './goldens/matrix-${axis.key}-padding.${padding.key}-$maa-$caa.png',
           );
         });
       }
