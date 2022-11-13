@@ -31,9 +31,14 @@ void main() {
     'different': EdgeInsets.fromLTRB(8, 10, 16, 4),
   };
 
+  const Map<String, Axis> axisMap= {
+    'nrow': Axis.horizontal,
+    'ncolumn': Axis.vertical,
+  };
+
   List<CrossAxisAlignment> caas = List.from(CrossAxisAlignment.values)
     ..remove(CrossAxisAlignment.baseline);
-
+  for (final axis in axisMap.entries) {
   for (MainAxisAlignment maa in MainAxisAlignment.values) {
     for (CrossAxisAlignment caa in caas) {
       for (final padding in paddingMap.entries) {
@@ -51,14 +56,14 @@ void main() {
             constraints: const BoxConstraints.tightFor(width: 8, height: 8),
           ),
         ];
-        testWidgets('matrix: nrow, padding.${padding.key}, $maa, $caa',
+        testWidgets('matrix: ${axis.key}, padding.${padding.key}, $maa, $caa',
             (WidgetTester tester) async {
           await expectEqualWidget(
             tester,
             Padding(
               padding: padding.value,
               child: Flex(
-                direction: Axis.horizontal,
+                direction: axis.value,
                 mainAxisAlignment: maa,
                 crossAxisAlignment: caa,
                 textDirection: TextDirection.ltr,
@@ -67,15 +72,16 @@ void main() {
             ),
             NFlex(
               padding: padding.value,
-              direction: Axis.horizontal,
+              direction: axis.value,
               mainAxisAlignment: maa,
               crossAxisAlignment: caa,
               children: children,
             ),
-            './goldens/matrix-nrow-padding.${padding.key}-$maa-$caa',
+            './goldens/matrix-${axis.key}-padding.${padding.key}-$maa-$caa',
           );
         });
       }
     }
+  }
   }
 }
