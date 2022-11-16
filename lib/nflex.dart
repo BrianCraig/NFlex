@@ -10,9 +10,10 @@ class NFlex extends MultiChildRenderObjectWidget {
     super.key,
     super.children,
     required this.direction,
-    this.padding = EdgeInsets.zero,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.crossAxisAlignment = CrossAxisAlignment.center,
+    this.padding = EdgeInsets.zero,
+    this.gap = 0,
   });
 
   final Axis direction;
@@ -22,6 +23,8 @@ class NFlex extends MultiChildRenderObjectWidget {
   final MainAxisAlignment mainAxisAlignment;
 
   final CrossAxisAlignment crossAxisAlignment;
+
+  final double gap;
 
   @override
   RenderNFlex createRenderObject(BuildContext context) {
@@ -35,7 +38,7 @@ class NFlex extends MultiChildRenderObjectWidget {
 
   @override
   void updateRenderObject(
-      BuildContext context, covariant RenderNFlex renderObject) {
+      BuildContext context, RenderNFlex renderObject) {
     renderObject
       ..direction = direction
       ..mainAxisAlignment = mainAxisAlignment
