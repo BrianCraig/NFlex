@@ -14,7 +14,13 @@ class NFlex extends MultiChildRenderObjectWidget {
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.padding = EdgeInsets.zero,
     this.gap = 0,
-  });
+  })  : assert(gap >= 0, 'can\'t render negative gap values'),
+        assert(
+            gap == 0 ||
+                mainAxisAlignment == MainAxisAlignment.start ||
+                mainAxisAlignment == MainAxisAlignment.center ||
+                mainAxisAlignment == MainAxisAlignment.end,
+            'gap can\'t be set aside alignment: $mainAxisAlignment. only start, end and center are valid options.');
 
   final Axis direction;
 
@@ -29,21 +35,28 @@ class NFlex extends MultiChildRenderObjectWidget {
   @override
   RenderNFlex createRenderObject(BuildContext context) {
     return RenderNFlex(
-      direction: direction,
-      mainAxisAlignment: mainAxisAlignment,
-      crossAxisAlignment: crossAxisAlignment,
-      padding: padding,
-    );
+        direction: direction,
+        mainAxisAlignment: mainAxisAlignment,
+        crossAxisAlignment: crossAxisAlignment,
+        padding: padding,
+        gap: gap);
   }
 
   @override
-  void updateRenderObject(
-      BuildContext context, RenderNFlex renderObject) {
+  void updateRenderObject(BuildContext context, RenderNFlex renderObject) {
+    assert(gap >= 0, 'can\'t render negative gap values');
+    assert(
+        gap == 0 ||
+            mainAxisAlignment == MainAxisAlignment.start ||
+            mainAxisAlignment == MainAxisAlignment.center ||
+            mainAxisAlignment == MainAxisAlignment.end,
+        'gap can\'t be set aside alignment: $mainAxisAlignment. only start, end and center are valid options.');
     renderObject
       ..direction = direction
       ..mainAxisAlignment = mainAxisAlignment
       ..crossAxisAlignment = crossAxisAlignment
-      ..padding = padding;
+      ..padding = padding
+      ..gap = gap;
   }
 }
 
@@ -53,6 +66,7 @@ class NRow extends NFlex {
     super.mainAxisAlignment,
     super.crossAxisAlignment,
     super.padding,
+    super.gap,
     super.children,
   }) : super(
           direction: Axis.horizontal,
@@ -65,6 +79,7 @@ class NColumn extends NFlex {
     super.mainAxisAlignment,
     super.crossAxisAlignment,
     super.padding,
+    super.gap,
     super.children,
   }) : super(
           direction: Axis.vertical,
@@ -109,10 +124,12 @@ class RenderNFlex extends RenderBox
     MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
     CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
     EdgeInsets padding = EdgeInsets.zero,
+    double gap = .0,
   })  : _direction = direction,
         _mainAxisAlignment = mainAxisAlignment,
         _crossAxisAlignment = crossAxisAlignment,
-        _padding = padding;
+        _padding = padding,
+        _gap = gap;
 
   /// The direction to use as the main axis.
   Axis get direction => _direction;
@@ -150,6 +167,16 @@ class RenderNFlex extends RenderBox
   set padding(EdgeInsets value) {
     if (_padding != value) {
       _padding = value;
+      markNeedsLayout();
+    }
+  }
+
+  /// The gap between elements.
+  double get gap => _gap;
+  double _gap;
+  set gap(double value) {
+    if (_gap != value) {
+      _gap = value;
       markNeedsLayout();
     }
   }
@@ -217,21 +244,22 @@ class RenderNFlex extends RenderBox
     final double actualSizeDelta = _direction._mainWidth(size) -
         _direction._mainPadding(padding) -
         allocatedSize;
-    final double remainingSpace = max(0.0, actualSizeDelta);
+    final double gapSize = max(0.0, (childCount - 1) * gap);
+    final double remainingSpace = max(0.0, actualSizeDelta) - gapSize;
     late final double leadingSpace;
     late final double betweenSpace;
     switch (_mainAxisAlignment) {
       case MainAxisAlignment.start:
         leadingSpace = 0.0;
-        betweenSpace = 0.0; // gap here?
+        betweenSpace = gap;
         break;
       case MainAxisAlignment.end:
         leadingSpace = remainingSpace;
-        betweenSpace = 0.0; // gap here?
+        betweenSpace = gap;
         break;
       case MainAxisAlignment.center:
         leadingSpace = remainingSpace / 2.0;
-        betweenSpace = 0.0; // gap here?
+        betweenSpace = gap;
         break;
       case MainAxisAlignment.spaceBetween:
         leadingSpace = 0.0;

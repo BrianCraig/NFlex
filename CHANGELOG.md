@@ -1,3 +1,8 @@
+## Next
+
+ - Created Matrix Tests for `gap`, and assertions for incorrect gap usage.
+ - Implemented `gap`.
+
 ## 0.0.2
 
  - Added `NRow` and `NColumn`.

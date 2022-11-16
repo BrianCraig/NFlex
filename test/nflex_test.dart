@@ -97,18 +97,34 @@ void main() {
   for (final collision in collisions) {
     test('gap: incompatible with $collision', () {
       expect(
-        () {
-          NFlex(
-            direction: Axis.horizontal,
-            gap: 10,
-          );
-        },
+        () => NFlex(
+          direction: Axis.horizontal,
+          mainAxisAlignment: collision,
+          gap: 10,
+        ),
         throwsA(
           isA<AssertionError>().having(
             (e) => e.message,
             'message',
             equals(
               'gap can\'t be set aside alignment: $collision. only start, end and center are valid options.',
+            ),
+          ),
+        ),
+      );
+    });
+    test('gap: negative gap throws assertion error', () {
+      expect(
+        () => NFlex(
+          direction: Axis.horizontal,
+          gap: -8,
+        ),
+        throwsA(
+          isA<AssertionError>().having(
+            (e) => e.message,
+            'message',
+            equals(
+              'can\'t render negative gap values',
             ),
           ),
         ),
@@ -124,8 +140,7 @@ void main() {
   for (final axis in axisMap.entries) {
     for (MainAxisAlignment maa in alignments) {
       for (CrossAxisAlignment caa in caas) {
-        testWidgets(
-            'matrix-gap: ${axis.key}, $maa, $caa',
+        testWidgets('matrix-gap: ${axis.key}, $maa, $caa',
             (WidgetTester tester) async {
           await expectEqualWidget(
             tester,

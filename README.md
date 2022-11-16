@@ -60,7 +60,7 @@ NFlex(
 | feature | test | impl | doc |
 |---|---|---|---|
 | padding            | ✅ | ✅ |    |
-| gap                | ❌ | ❌ |    |
+| gap                | ✅ | ✅ |    |
 | mainAxisAlignment  | ✅ | ✅ |    |
 | crossAxisAlignment | ✅ | ✅ |    |
 | axis               | ✅ | ✅ |    |
